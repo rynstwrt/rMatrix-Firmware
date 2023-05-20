@@ -2,6 +2,7 @@
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeSansBold9pt7b.h>
+#include <ESP8266WiFi.h>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -136,22 +137,27 @@ void onRotate(bool incrementing)
         {
             case 0:
                 (incrementing) ? ++effect : --effect;
+                effect %= NUM_EFFECTS + 1;
                 displayValue(effect, NUM_EFFECTS);
                 break;
             case 1:
                 (incrementing) ? ++palette : --palette;
+                palette %= NUM_PALETTES + 1;
                 displayValue(palette, NUM_PALETTES);
                 break;
             case 2: 
                 (incrementing) ? ++brightness : --brightness;
+                brightness %= MAX_BRIGHTNESS + 1;
                 displayValue(brightness, MAX_BRIGHTNESS);
                 break;
             case 3:
                 (incrementing) ? ++speed : --speed;
+                speed %= MAX_SPEED + 1;
                 displayValue(speed, MAX_SPEED);
                 break;
             case 4:
                 (incrementing) ? ++intensity : --intensity;
+                intensity %= MAX_INTENSITY + 1;
                 displayValue(intensity, MAX_INTENSITY);
                 break;
         }
@@ -206,6 +212,7 @@ void setup()
     createMenu();
 }
 
+String request = "";
 void loop()
 {
     onRotate(true);
