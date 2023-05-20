@@ -2,7 +2,6 @@
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeSansBold9pt7b.h>
-#include <ESP8266WiFi.h>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -212,7 +211,6 @@ void setup()
     createMenu();
 }
 
-String request = "";
 void loop()
 {
     onRotate(true);
