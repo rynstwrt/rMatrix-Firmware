@@ -1,5 +1,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Fonts/FreeSans9pt7b.h>
+#include <Fonts/FreeSansBold9pt7b.h>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -7,11 +9,21 @@
 #define OLED_RESET -1
 #define OLED_ADDR 0x3C
 
+#define INTRO_FONT FreeSansBold9pt7b
+#define INTRO_FONT_SIZE 2
+
+#define MENU_FONT FreeSans9pt7b
+#define MENU_FONT_SIZE 1
+#define MENU_SPACING 15
+#define MENU_PADDING 10
+
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-String menuItems[] = {"EFFECT", "PALETTE", "BRIGHTNESS", "SPEED", "INTENSITY"};
+String menuItems[] = {"EFFECT", "PALETTE", "LIGHT", "SPEED", "INTENSITY"};
 int numMenuItems = 5;
-int currentMenuItem = 0;
+int currentMenuIndex = 0;
+bool menuItemSelected = false; // TODO:
+
 
 int* getCenterTextCoords(String text)
 {
@@ -28,6 +40,8 @@ int* getCenterTextCoords(String text)
 void intro(String text)
 {
     display.clearDisplay();
+    // display.setFont(&INTRO_FONT);
+    display.setTextSize(INTRO_FONT_SIZE);
 
     int* coords = getCenterTextCoords(text);
     display.setCursor(coords[0], coords[1]);
@@ -47,6 +61,24 @@ void intro(String text)
     delay(750);
 }
 
+void createMenu()
+{
+    display.clearDisplay();
+    display.setTextSize(MENU_FONT_SIZE);
+
+    int y = MENU_PADDING;
+    for (int i = 0; i < numMenuItems; ++i)
+    {
+        display.setCursor(MENU_PADDING, y);
+        
+        String text = (i == currentMenuIndex) ? ">" + menuItems[i] : menuItems[i];
+        display.print(text);
+        y += MENU_SPACING;
+    }
+
+    display.display();
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -59,32 +91,12 @@ void setup()
     Serial.println("SSD1306 initialized!");
 
     display.setTextColor(SSD1306_WHITE);
-    display.setTextSize(2);
+    
     intro("rMatrix");    
+    createMenu();
 }
 
 void loop()
 {
-    display.clearDisplay();
-    display.setCursor(0, 0);
-
-    for (int i = 0; i < numMenuItems; ++i)
-    {
-        String text = (i == currentMenuItem) ? "> " + menuItems[i] : menuItems[i];
-        display.println(text);
-    }
-
-    display.display();
-    delay(50);
-
-    // int16_t x, y;
-    // uint16_t w, h;
-    // display.getTextBounds(menuItems[0], 0, 0, &x, &y, &w, &h);
-
-    // for (int i = 0; i < numMenuItems; ++i)
-    // {
-    //     // display.setCursor(0, i * h);
-    //     String text = (i == currentMenuItem) ? "> " + menuItems[i] : menuItems[i];
-    //     display.print
-    // }
+    // createMenu();
 }
