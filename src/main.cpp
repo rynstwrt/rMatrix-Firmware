@@ -17,58 +17,92 @@
 */
  
 
+ /*
+    === THE WIRING (WEMOS D1 MINI) ===
+    
+    FOR THE OLED
+    ------------------------
+    OLED GND -> Wemos GND
+    OLED VCC -> Wemos 5V
+    OLED SCL -> Wemos D1 pin
+    OLED SDA -> Wemos D2 pin
+
+    FOR THE BUTTON
+    ------------------------
+    BUTTON + -> D5
+    BUTTON GND -> GND
+ */
+ 
+
 // INCLUDES
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeSansBold9pt7b.h>
+#include <Button2.h>
 
 
-// DEFINITIONS
+// OLED DEFINITIONS
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-
 #define OLED_RESET -1
 #define OLED_ADDR 0x3C
 
+// FONT DEFINITIONS
 #define INTRO_FONT FreeSansBold9pt7b
 #define INTRO_FONT_SIZE 2
-
+#define INSTRUCTIONS_FONT NULL
+#define INSTRUCTIONS_FONT_SIZE 2
+#define MENU_FONT NULL
 #define MENU_FONT_SIZE 1
-#define MENU_PADDING 10
+#define MENU_SCREEN_PADDING 10
 #define MENU_SPACING 3
-
 #define VALUE_FONT_SIZE 2
 
-#define DEFAULT_EFFECT 0
+// INTRO DEFINITIONS
+#define INTRO_FLASH_DELAY 175
+#define INTRO_FLASH_FINISH_DELAY 750
+#define INTRO_INSTRUCTIONS_DELAY 1250
+
+// MENU VALUE DEFINITIONS
+#define DEFAULT_EFFECT 1
 #define NUM_EFFECTS 10
-
-#define DEFAULT_PALETTE 0
+#define DEFAULT_PALETTE 1
 #define NUM_PALETTES 10
-
 #define DEFAULT_BRIGHTNESS 255
 #define MAX_BRIGHTNESS 255
-
 #define DEFAULT_SPEED 255
 #define MAX_SPEED 255
-
 #define DEFAULT_INTENSITY 128
 #define MAX_INTENSITY 255
+
+// BUTTON DEFINITIONS
+#define BUTTON_PIN 14
+
+// MISCELLANEOUS DEFINITIONS
+#define SERIAL_SPEED 115200
 
 
 // GLOBAL VARIABLES
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-String menuItems[] = {"EFFECT", "PALETTE", "BRIGHTNESS", "SPEED", "INTENSITY"};
-int numMenuItems = 5;
+const int numInstructions = 3;
+String instructions[numInstructions][2] = {
+    {"1 CLICK", "FOR NEXT"}, 
+    {"2 CLICKS", "FOR PREV"}, 
+    {"LONG CLICK", "TO CONFIRM"}};
+
+const int numMenuItems = 5;
+String menuItems[numMenuItems] = {"EFFECT", "PALETTE", "BRIGHTNESS", "SPEED", "INTENSITY"};
 int currentMenuIndex = 0;
-bool menuItemSelected = false; // TODO:
+bool menuItemSelected = false;
 
 int effect = DEFAULT_EFFECT;
 int palette = DEFAULT_PALETTE;
 int brightness = DEFAULT_BRIGHTNESS;
 int speed = DEFAULT_SPEED;
 int intensity = DEFAULT_INTENSITY;
+
+Button2 button;
 
 
 /**
@@ -97,28 +131,49 @@ int* getCenterTextCoords(String text, bool isIntro)
  * 
  * @param text The text to display for the intro sequence.
 */
-void intro(String text)
+void intro()
 {
     display.clearDisplay();
     display.setFont(&INTRO_FONT);
     display.setTextSize(INTRO_FONT_SIZE);
 
-    int* coords = getCenterTextCoords(text, true);
+    String rMatrix = "rMatrix";
+    int* coords = getCenterTextCoords(rMatrix, true);
     display.setCursor(coords[0], coords[1]);
     delete[] coords;
 
-    display.println(text);
-
+    display.println(rMatrix);
     bool inverted = false;
     for (int i = 0; i < 5; ++i)
     {
         display.display();
-        delay(200);
+        delay(INTRO_FLASH_DELAY);
         display.invertDisplay(inverted);
         inverted = !inverted;
     }
 
-    delay(750);
+    delay(INTRO_FLASH_FINISH_DELAY);
+    display.setFont(INSTRUCTIONS_FONT);
+    display.setTextSize(INSTRUCTIONS_FONT_SIZE);
+
+    for (int i = 0; i < numInstructions; ++i)
+    {
+        display.clearDisplay();
+        String* textParts = instructions[i];
+
+        for (int j = 0; j < 2; ++j)
+        {
+            String text = textParts[j];
+            int* coords = getCenterTextCoords(text, false);
+            int y = (j == 0) ? coords[1] : display.getCursorY() + MENU_SPACING / 3;
+            display.setCursor(coords[0], y);
+            delete[] coords;
+            display.println(text);
+        }
+
+        display.display();
+        delay(INTRO_INSTRUCTIONS_DELAY);  
+    }
 }
 
 
@@ -128,17 +183,17 @@ void intro(String text)
 void createMenu()
 {
     display.clearDisplay();
-    display.setFont(NULL);
+    display.setFont(MENU_FONT);
     display.setTextSize(MENU_FONT_SIZE);
 
     int16_t x, y;
     uint16_t w, h;
     display.getTextBounds(menuItems[0].c_str(), 0, 0, &x, &y, &w, &h);
 
-    int yPos = MENU_PADDING;
+    int yPos = MENU_SCREEN_PADDING;
     for (int i = 0; i < numMenuItems; ++i)
     {
-        display.setCursor(MENU_PADDING, yPos);
+        display.setCursor(MENU_SCREEN_PADDING, yPos);
         
         String text = (i == currentMenuIndex) ? ">" + menuItems[i] : menuItems[i];
         display.print(text);
@@ -171,12 +226,12 @@ void displayValue(int value, int maxValue)
 
 
 /**
- * Called when the rotary coder is turned. Either changes the 
+ * Called when the button is pressed once or twice. Either changes the 
  * selected menu item or changes the value for the selected menu item.
  * 
  * @param incrementing If the rotary encoder was turned clockwise or not.
 */
-void onRotate(bool incrementing)
+void moveSelection(bool incrementing)
 {
     if (!menuItemSelected)
     {
@@ -222,12 +277,41 @@ void onRotate(bool incrementing)
 
 
 /**
- * Called when the rotary coder is depressed. Either selects a menu
- * item and displays the value to be edited, or returns to the menu 
- * after editing a value.
+ * Called when the button is clicked once. Moves the selected menu 
+ * item or the value of a menu item forward.
+ * 
+ * @param btn The button clicked.
 */
-void onClick()
+void onSingleClick(Button2 &btn)
 {
+    Serial.println("single click");
+    moveSelection(true);
+}
+
+
+/**
+ * Called when the button is double clicked. Moves the selected
+ * menu item or the value of a menu item backward.
+ * 
+ * @param btn The button clicked.
+*/
+void onDoubleClick(Button2 &btn)
+{
+    Serial.println("double click");
+    moveSelection(false);
+}
+
+
+/**
+ * Called when the button is held down. Confirms the currently
+ * selected item in the menu system.
+ * 
+ * @param btn The button clicked.
+*/
+void onLongClick(Button2 &btn)
+{
+    Serial.println("long click");
+
     menuItemSelected = !menuItemSelected;
 
     if (menuItemSelected)
@@ -264,19 +348,24 @@ void onClick()
 */
 void setup()
 {
-    Serial.begin(115200);
+    Serial.begin(SERIAL_SPEED);
 
     if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR))
     {
         Serial.println(F("SSD1306 allocation failed"));
         for (;;); // Loop forever
     }
+
     Serial.println("SSD1306 initialized!");
 
     display.setTextColor(SSD1306_WHITE);
-    
-    intro("rMatrix");    
+    intro();    
     createMenu();
+
+    button.begin(BUTTON_PIN, INPUT_PULLUP, false);
+    button.setClickHandler(onSingleClick);
+    button.setDoubleClickHandler(onDoubleClick);
+    button.setLongClickDetectedHandler(onLongClick);
 }
 
 
@@ -285,12 +374,5 @@ void setup()
 */
 void loop()
 {
-    
-    // onRotate(true);
-    // delay(1000);
-    // onClick();
-    // onRotate(true);
-    // delay(1000);
-    // onClick();
-    // delay(1000);
+    button.loop();
 }
