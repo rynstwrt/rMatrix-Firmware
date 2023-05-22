@@ -1,18 +1,18 @@
 #include <rmatrix.h>
-#include <constants.h>
 
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-rMatrix rMtrx(display);
+rMatrix matrix;
 
 
 void setup()
 {
-    rMtrx.setup();
+    matrix.setDisplay(display);
+    matrix.setup();
 }
 
 
 void loop()
 {
-    rMtrx.loop();
+    matrix.loop();
 }

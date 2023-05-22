@@ -2,6 +2,28 @@
 
 
 /**
+* Get the coordinates that would place printed text to the OLED
+* in the center of the screen.
+* 
+* @param display The SSD1306 used by the rMatrix instance.
+* @param text The text to measure the size of.
+* @param isIntro Whether this function is called from the intro function or not.
+* @return A 2-element pointer array of the X and Y coordinates.
+*/
+int* rMatrix::getCenterTextCoords(String text, bool isIntro)
+{
+    int16_t x, y;
+    uint16_t w, h;
+    display.getTextBounds(text.c_str(), 0, 0, &x, &y, &w, &h);
+
+    int* coords = new int[2];
+    coords[0] = (SCREEN_WIDTH - w) / 2;
+    coords[1] = (isIntro ? SCREEN_HEIGHT + h : SCREEN_HEIGHT - h) / 2;
+    return coords;
+}
+
+
+/**
  * Runs the intro sequence upon boot.
  */
 void rMatrix::playIntro()
@@ -11,9 +33,7 @@ void rMatrix::playIntro()
     display.setTextSize(INTRO_FONT_SIZE);
 
     String nameText = "rMatrix";
-    // TODO: look at later
-    // Helpers::a = 10;
-    int* coords = Helpers::getCenterTextCoords("a", 10);
+    int* coords = getCenterTextCoords(nameText, true);
     display.setCursor(coords[0], coords[1]);
     delete[] coords;
 
@@ -39,13 +59,13 @@ void rMatrix::playIntro()
         for (int j = 0; j < 2; ++j)
         {
             String text = textParts[j];
-            int* coords = Helpers::getCenterTextCoords(text, false);
+            int* coords = getCenterTextCoords(text, false);
             int y = (j == 0) ? coords[1] : display.getCursorY() + MENU_SPACING / 3;
             display.setCursor(coords[0], y);
-            delete[] coords;
             display.println(text);
         }
 
+        Serial.println("D");
         display.display();
         delay(INTRO_INSTRUCTIONS_DELAY);  
     }
@@ -91,7 +111,7 @@ void rMatrix::displayValuePage(int value, int maxValue)
     display.setTextSize(VALUE_FONT_SIZE);
 
     String text = String(value) + "/" + maxValue;
-    int* coords = Helpers::getCenterTextCoords(text, false);
+    int* coords = getCenterTextCoords(text, false);
     display.setCursor(coords[0], coords[1]);
     delete[] coords;
     display.println(text);
@@ -234,8 +254,14 @@ void rMatrix::setup()
     Serial.println("SSD1306 initialized!");
 
     display.setTextColor(SSD1306_WHITE);
-    playIntro();    
+
+    playIntro();
+
+    Serial.println("A");
+
     drawMenu();
+
+    Serial.println("B");
 
     button.begin(BUTTON_PIN, INPUT_PULLUP, false);
     button.setLongClickTime(BUTTON_LONG_PRESS_THRESHOLD);
