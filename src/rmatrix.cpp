@@ -177,7 +177,7 @@ void rMatrix::moveSelection(bool incrementing)
  * 
  * @param btn The button clicked.
 */
-void rMatrix::sendSingleClick(Button2 &btn)
+void rMatrix::sendSingleClick()
 {
     Serial.println("single click");
     moveSelection(true);
@@ -190,7 +190,7 @@ void rMatrix::sendSingleClick(Button2 &btn)
  * 
  * @param btn The button clicked.
 */
-void rMatrix::sendDoubleClick(Button2 &btn)
+void rMatrix::sendDoubleClick()
 {
     Serial.println("double click");
     moveSelection(false);
@@ -203,7 +203,7 @@ void rMatrix::sendDoubleClick(Button2 &btn)
  * 
  * @param btn The button clicked.
 */
-void rMatrix::sendLongClick(Button2 &btn)
+void rMatrix::sendLongClick()
 {
     Serial.println("long click");
 
@@ -256,17 +256,14 @@ void rMatrix::setup()
     display.setTextColor(SSD1306_WHITE);
 
     playIntro();
-
-    Serial.println("A");
-
     drawMenu();
 
-    Serial.println("B");
+    // button.begin(BUTTON_PIN, INPUT_PULLUP, false);
+    // button.setLongClickTime(BUTTON_LONG_PRESS_THRESHOLD);
+    // button.setDoubleClickTime(BUTTON_DOUBLE_CLICK_THRESHOLD);
 
-    button.begin(BUTTON_PIN, INPUT_PULLUP, false);
-    button.setLongClickTime(BUTTON_LONG_PRESS_THRESHOLD);
-    button.setDoubleClickTime(BUTTON_DOUBLE_CLICK_THRESHOLD);
-    // button.setClickHandler(sendSingleClick);
+    // button.setTapHandler(sendSingleClick);
+    // button.setClickHandler(onSingleClick);
     // button.setDoubleClickHandler(sendDoubleClick);
     // button.setLongClickDetectedHandler(sendLongClick);
 }
@@ -277,5 +274,9 @@ void rMatrix::setup()
 */
 void rMatrix::loop()
 {
-    button.loop();
+    // button.loop(); 
+
+    // int buttonState = button.getState();
+
+    // Serial.println(buttonState);
 }
