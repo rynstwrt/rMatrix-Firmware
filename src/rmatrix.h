@@ -9,6 +9,11 @@ class rMatrix
     private: 
         Adafruit_SSD1306 display;
 
+        unsigned long buttonTimer = 0;
+        bool buttonActive = false;
+        bool longPressActive = false;
+        unsigned long lastDebounceTime = 0;
+
         String instructions[NUM_INSTRUCTIONS][2] = {
                     {"1 CLICK", "FOR NEXT"}, 
                     {"2 CLICKS", "FOR PREV"}, 

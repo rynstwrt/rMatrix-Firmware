@@ -234,7 +234,39 @@ void rMatrix::onLongClick()
 */
 void rMatrix::detectButtonClicks()
 {
+    int state = digitalRead(BUTTON_PIN);
 
+    if (millis() - lastDebounceTime > BUTTON_DEBOUNCE)
+    {
+        lastDebounceTime = millis();
+
+        if (state)
+        {
+            if (!buttonActive)
+            {
+                buttonActive = true;
+                buttonTimer = millis();
+            }   
+
+            if ((millis() - buttonTimer > BUTTON_LONG_PRESS_THRESHOLD) && !longPressActive)
+            {
+                longPressActive = true;
+                onLongClick();
+            }
+        }
+        else 
+        {
+            if (buttonActive)
+            {
+                if (longPressActive)
+                    longPressActive = false;
+                else 
+                    onShortClick();
+
+                buttonActive = false;
+            }
+        }
+    }
 }
 
 
@@ -245,12 +277,15 @@ void rMatrix::detectButtonClicks()
 void rMatrix::setup()
 {
     Serial.begin(SERIAL_SPEED);
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
 
     if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR))
     {
         Serial.println(F("SSD1306 allocation failed"));
         for (;;); // Loop forever
     }
+
+    Serial.println(F("SSD1306 initialized"));
 
     playIntro();
     drawMenu();
@@ -262,4 +297,5 @@ void rMatrix::setup()
 */
 void rMatrix::loop()
 {
+    detectButtonClicks();
 }
