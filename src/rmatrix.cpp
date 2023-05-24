@@ -2,13 +2,20 @@
 
 
 /**
+ * Default constructor for rMatrix. Initializes the Adafruit_SSD1306
+ * display variable.
+*/
+rMatrix::rMatrix() : display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
+
+
+/**
 * Get the coordinates that would place printed text to the OLED
 * in the center of the screen.
 * 
 * @param display The SSD1306 used by the rMatrix instance.
 * @param text The text to measure the size of.
 * @param isIntro Whether this function is called from the intro function or not.
-* @return A 2-element pointer array of the X and Y coordinates.
+*  A 2-element pointer array of the X and Y coordinates.
 */
 int* rMatrix::getCenterTextCoords(String text, bool isIntro)
 {
@@ -29,6 +36,7 @@ int* rMatrix::getCenterTextCoords(String text, bool isIntro)
 void rMatrix::playIntro()
 {
     display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE); 
     display.setFont(&INTRO_FONT);
     display.setTextSize(INTRO_FONT_SIZE);
 
@@ -65,7 +73,6 @@ void rMatrix::playIntro()
             display.println(text);
         }
 
-        Serial.println("D");
         display.display();
         delay(INTRO_INSTRUCTIONS_DELAY);  
     }
@@ -172,38 +179,21 @@ void rMatrix::moveSelection(bool incrementing)
 
 
 /**
- * Called when the button is clicked once. Moves the selected menu 
+ * Called when the button is short clicked. Moves the selected menu 
  * item or the value of a menu item forward.
- * 
- * @param btn The button clicked.
 */
-void rMatrix::sendSingleClick()
+void rMatrix::onShortClick()
 {
-    Serial.println("single click");
+    Serial.println("short click");
     moveSelection(true);
 }
 
 
 /**
- * Called when the button is double clicked. Moves the selected
- * menu item or the value of a menu item backward.
- * 
- * @param btn The button clicked.
-*/
-void rMatrix::sendDoubleClick()
-{
-    Serial.println("double click");
-    moveSelection(false);
-}
-
-
-/**
- * Called when the button is held down. Confirms the currently
+ * Called when the button is long clicked. Confirms the currently
  * selected item in the menu system.
- * 
- * @param btn The button clicked.
 */
-void rMatrix::sendLongClick()
+void rMatrix::onLongClick()
 {
     Serial.println("long click");
 
@@ -238,6 +228,17 @@ void rMatrix::sendLongClick()
 
 
 /**
+ * Function called every update that checks for short and long clicks.
+ * Short click detected -> rMatrix::onShortClick()
+ * Long click detected -> rMatrix::onLongClick()
+*/
+void rMatrix::detectButtonClicks()
+{
+
+}
+
+
+/**
  * The setup function. Initializes the OLED, plays the intro, and
  * then displays the menu.
 */
@@ -251,21 +252,8 @@ void rMatrix::setup()
         for (;;); // Loop forever
     }
 
-    Serial.println("SSD1306 initialized!");
-
-    display.setTextColor(SSD1306_WHITE);
-
     playIntro();
     drawMenu();
-
-    // button.begin(BUTTON_PIN, INPUT_PULLUP, false);
-    // button.setLongClickTime(BUTTON_LONG_PRESS_THRESHOLD);
-    // button.setDoubleClickTime(BUTTON_DOUBLE_CLICK_THRESHOLD);
-
-    // button.setTapHandler(sendSingleClick);
-    // button.setClickHandler(onSingleClick);
-    // button.setDoubleClickHandler(sendDoubleClick);
-    // button.setLongClickDetectedHandler(sendLongClick);
 }
 
 
@@ -274,9 +262,4 @@ void rMatrix::setup()
 */
 void rMatrix::loop()
 {
-    // button.loop(); 
-
-    // int buttonState = button.getState();
-
-    // Serial.println(buttonState);
 }

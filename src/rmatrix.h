@@ -2,14 +2,12 @@
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSansBold9pt7b.h>
 #include <constants.h>
-#include <ClickButton.h>
 
 
 class rMatrix
 {
     private: 
         Adafruit_SSD1306 display;
-        
 
         String instructions[NUM_INSTRUCTIONS][2] = {
                     {"1 CLICK", "FOR NEXT"}, 
@@ -28,10 +26,7 @@ class rMatrix
 
 
     public:
-        void setDisplay(Adafruit_SSD1306 oled)
-        {
-            display = oled;
-        }
+        rMatrix();
 
         int* getCenterTextCoords(String text, bool isIntro);
 
@@ -41,9 +36,9 @@ class rMatrix
 
         void moveSelection(bool incrementing);
 
-        void sendSingleClick();
-        void sendDoubleClick();
-        void sendLongClick();
+        void onShortClick();
+        void onLongClick();
+        void detectButtonClicks();
 
         void setup();
         void loop();
