@@ -1,3 +1,49 @@
+/*
+ * The firmware for the rMatrix project, as seen on https://www.rmatrix.xyz. 
+ * 
+ * Developed by Ryan Stewart, A.K.A. Ryn.
+ * 
+ * This firmware is licensed under the 
+ * Creative Commons Attribution-NonCommercial-ShareAlike (CC-BY-NC-SA)
+ * license: http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * 
+ * This firmware can be modified and distributed, but can NOT be used for
+ * commerical use. The licensing also requires that you release any 
+ * modified works of this firmware under the same license.
+ * 
+ * This firmware is distributed "as is" and without any warranty.
+ * 
+ * Check the LICENSE.md file for details about licensing.
+*/
+ 
+
+ /*
+    [=== THE WIRING (WEMOS D1 MINI) ===]
+    
+    FOR THE OLED
+    ------------------------
+    OLED GND -> Wemos GND
+    OLED VCC -> Wemos 5V
+    OLED SCL -> Wemos D1 pin
+    OLED SDA -> Wemos D2 pin
+
+
+    FOR THE BUTTON
+    ------------------------
+    BUTTON + -> Wemos D5
+    BUTTON GND -> Wemos GND
+
+
+    FOR THE LEDs
+    ------------------------
+    LED VCC -> Wemos 5V
+    LED GND -> Wemos GND
+    LED DATA -> Wemos D4
+
+ */
+
+
+
 #include <rmatrix.h>
 
 
@@ -115,7 +161,7 @@ void rMatrix::drawMenu()
 void rMatrix::displayValuePage(int value, int maxValue)
 {
     --maxValue;
-    
+
     display.clearDisplay();
     display.setTextSize(VALUE_FONT_SIZE);
 
