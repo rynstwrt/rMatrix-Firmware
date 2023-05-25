@@ -16,6 +16,8 @@ rMatrixFX::rMatrixFX()
 { 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS);
     FastLED.setBrightness(brightness);
+    FastLED.clear();
+    FastLED.show();
 }
 
 
@@ -30,6 +32,8 @@ void rMatrixFX::update()
         // TODO: set brightness, speed, intensity, effect, palette, etc
         changeHappened = false;
     }
+
+    FastLED.setBrightness(brightness);
 
     FXFunction func = effectFunctions[effectIndex];
     (this->*func)();
@@ -46,22 +50,21 @@ void rMatrixFX::update()
 */
 void rMatrixFX::effect1()
 {
-    Serial.println("1");
-
     if (millis() - ledTimer > FX1_DEBOUNCE)
     {
-        leds[ledIndex] = ColorFromPalette(*palette, ledIndex);
+        float colorIndex = 255 * ledIndex / NUM_LEDS; 
+        leds[ledIndex] = ColorFromPalette(*palettes[paletteIndex], colorIndex);
         FastLED.show();
         
         ++ledIndex;
-        ledTimer = millis();
-    }
+        if (ledIndex == NUM_LEDS)
+        {
+            ledIndex = 0;
+            FastLED.clear();
+            FastLED.show();
+        }
 
-    if (ledIndex == NUM_LEDS)
-    {
-        ledIndex = 0;
-        FastLED.clear();
-        FastLED.show();
+        ledTimer = millis();
     }
 }
 
@@ -72,8 +75,6 @@ void rMatrixFX::effect1()
 */
 void rMatrixFX::effect2()
 {
-    Serial.println("2");
-
     if (millis() - ledTimer > FX2_DEBOUNCE)
     {
         ledBoolean = !ledBoolean;
@@ -82,7 +83,7 @@ void rMatrixFX::effect2()
         {
             for (int i = 0; i < NUM_LEDS; ++i)
             {
-                leds[i] = ColorFromPalette(*palette, i);
+                leds[i] = ColorFromPalette(*palettes[paletteIndex], i);
             }
         }
         else 
@@ -102,22 +103,20 @@ void rMatrixFX::effect2()
 */
 void rMatrixFX::effect3()
 {
-    Serial.println("3");
-
     if (millis() - ledTimer > FX3_DEBOUNCE)
     {
         ledBoolean = !ledBoolean;
 
-        FastLED.clear();   
+        FastLED.clear();
         for (int i = 0; i < NUM_LEDS; ++i)
         {
             if (i % 2 == 0 && ledBoolean)
             {
-                leds[i] = ColorFromPalette(*palette, i);
+                leds[i] = ColorFromPalette(*palettes[paletteIndex], i);
             }
             else if (i % 2 != 0 && !ledBoolean)
             {
-                leds[i] = ColorFromPalette(*palette, i);
+                leds[i] = ColorFromPalette(*palettes[paletteIndex], i);
             }
         }
 
@@ -129,8 +128,17 @@ void rMatrixFX::effect3()
 
 /**
  * The fourth effect.
+ * Rainbow.
 */
 void rMatrixFX::effect4()
 {
-    Serial.println("4");   
+    if (millis() - ledTimer > FX4_DEBOUNCE)
+    {
+        for (int i = 0; i < NUM_LEDS; ++i)
+        {
+            leds[i] = ColorFromPalette(*palettes[paletteIndex], i + ledIndex);
+        }
+
+        ledTimer = millis();
+    }
 }

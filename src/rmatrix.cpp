@@ -219,12 +219,6 @@ void rMatrix::moveSelection(bool incrementing)
                 rFX.setSpeed(speed);
                 displayValuePage(speed, MAX_SPEED);
                 break;
-            case 4:
-                (incrementing) ? ++intensity : --intensity;
-                intensity %= MAX_INTENSITY;
-                rFX.setIntensity(intensity);
-                displayValuePage(intensity, MAX_INTENSITY);
-                break;
         }
     }
 }
@@ -266,9 +260,6 @@ void rMatrix::onLongClick()
                 break;
             case 3:
                 displayValuePage(speed, MAX_SPEED);
-                break;
-            case 4:
-                displayValuePage(intensity, MAX_INTENSITY);
                 break;
         }
     }

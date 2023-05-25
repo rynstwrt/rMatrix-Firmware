@@ -16,7 +16,6 @@ class rMatrixFX
         int paletteIndex = DEFAULT_PALETTE;
         int brightness = DEFAULT_BRIGHTNESS * VALUE_STEP;
         int speed = DEFAULT_SPEED * VALUE_STEP;
-        int intensity = DEFAULT_INTENSITY * VALUE_STEP;
 
         bool changeHappened = false;
 
@@ -26,11 +25,9 @@ class rMatrixFX
 
 
         // Palette values
-        TProgmemRGBPalette16 palettes[NUM_PALETTES] = {*CloudColors_p,
-                *LavaColors_p, *OceanColors_p, *ForestColors_p, *RainbowColors_p,
-                *RainbowStripeColors_p, *PartyColors_p, *HeatColors_p};
-
-        TProgmemHSVPalette16* palette = &(palettes[DEFAULT_PALETTE]);
+        const TProgmemRGBPalette16* palettes[NUM_PALETTES] = {&CloudColors_p,
+                &LavaColors_p, &OceanColors_p, &ForestColors_p, &RainbowColors_p,
+                &RainbowStripeColors_p, &PartyColors_p, &HeatColors_p};
 
 
         // Pointers to all the effect functions.
@@ -42,33 +39,37 @@ class rMatrixFX
     public:
         rMatrixFX();
 
-        void setEffect(int fx)
+        void resetEffect()
         {
-            effectIndex = fx;
+            FastLED.clear();
+            FastLED.show();
+            
             ledTimer = millis();
             ledIndex = 0;
             ledBoolean = false;
         }
 
+        void setEffect(int fx)
+        {
+            effectIndex = fx;
+            resetEffect();
+        }
+
         void setPalette(int p)
         {
             paletteIndex = p;
-            palette = &(palettes[paletteIndex]);
+            resetEffect();
         }
 
         void setBrightness(int bri)
         {
-            brightness = bri;
+            brightness = bri * VALUE_STEP;
+            FastLED.setBrightness(brightness);
         }
 
         void setSpeed(int s)
         {
-            speed = s;
-        }
-
-        void setIntensity(int i)
-        {
-            intensity = i;
+            speed = s * VALUE_STEP;
         }
 
         void update();
