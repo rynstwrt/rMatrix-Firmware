@@ -2,22 +2,24 @@
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSansBold9pt7b.h>
 #include <constants.h>
+#include <rmatrixfx.h>
 
 
 class rMatrix
 {
     private: 
+        rMatrixFX rFX;
+
         Adafruit_SSD1306 display;
 
         unsigned long buttonTimer = 0;
         bool buttonActive = false;
         bool longPressActive = false;
-        unsigned long lastDebounceTime = 0;
+        unsigned long lastDebounceTime = millis();
 
         String instructions[NUM_INSTRUCTIONS][2] = {
-                    {"1 CLICK", "FOR NEXT"}, 
-                    {"2 CLICKS", "FOR PREV"}, 
-                    {"LONG CLICK", "TO CONFIRM"}};
+                    {"SHORT CLCK", "FOR NEXT"}, 
+                    {"LONG CLCK", "TO CONFIRM"}};
         String menuItems[NUM_MENU_ITEMS] = {"EFFECT", "PALETTE", "BRIGHTNESS", "SPEED", "INTENSITY"};
 
         int currentMenuIndex = 0;

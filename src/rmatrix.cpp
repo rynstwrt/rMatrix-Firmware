@@ -114,6 +114,8 @@ void rMatrix::drawMenu()
 */
 void rMatrix::displayValuePage(int value, int maxValue)
 {
+    --maxValue;
+    
     display.clearDisplay();
     display.setTextSize(VALUE_FONT_SIZE);
 
@@ -150,27 +152,32 @@ void rMatrix::moveSelection(bool incrementing)
         {
             case 0:
                 (incrementing) ? ++effect : --effect;
-                effect %= NUM_EFFECTS + 1;
+                effect %= NUM_EFFECTS;
+                rFX.setEffect(effect);
                 displayValuePage(effect, NUM_EFFECTS);
                 break;
             case 1:
                 (incrementing) ? ++palette : --palette;
-                palette %= NUM_PALETTES + 1;
+                palette %= NUM_PALETTES;
+                rFX.setPalette(palette);
                 displayValuePage(palette, NUM_PALETTES);
                 break;
             case 2: 
                 (incrementing) ? ++brightness : --brightness;
-                brightness %= MAX_BRIGHTNESS + 1;
+                brightness %= MAX_BRIGHTNESS;
+                rFX.setBrightness(brightness);
                 displayValuePage(brightness, MAX_BRIGHTNESS);
                 break;
             case 3:
                 (incrementing) ? ++speed : --speed;
-                speed %= MAX_SPEED + 1;
+                speed %= MAX_SPEED;
+                rFX.setSpeed(speed);
                 displayValuePage(speed, MAX_SPEED);
                 break;
             case 4:
                 (incrementing) ? ++intensity : --intensity;
-                intensity %= MAX_INTENSITY + 1;
+                intensity %= MAX_INTENSITY;
+                rFX.setIntensity(intensity);
                 displayValuePage(intensity, MAX_INTENSITY);
                 break;
         }
@@ -297,5 +304,6 @@ void rMatrix::setup()
 */
 void rMatrix::loop()
 {
+    rFX.update();
     detectButtonClicks();
 }
