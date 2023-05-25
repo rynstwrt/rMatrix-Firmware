@@ -31,7 +31,7 @@ void rMatrixFX::update()
         changeHappened = false;
     }
 
-    FXFunction func = effectFunctions[effect];
+    FXFunction func = effectFunctions[effectIndex];
     (this->*func)();
 }
 
@@ -49,7 +49,7 @@ void rMatrixFX::effect1()
 
     if (millis() - fx1Timer > FX1_DEBOUNCE)
     {
-        leds[fx1Index] = CRGB::Red;
+        leds[fx1Index] = ColorFromPalette(*palette, fx1Index);
         FastLED.show();
         
         ++fx1Index;

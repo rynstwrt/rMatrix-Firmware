@@ -39,7 +39,6 @@
     LED VCC -> Wemos 5V
     LED GND -> Wemos GND
     LED DATA -> Wemos D4
-
  */
 
 
