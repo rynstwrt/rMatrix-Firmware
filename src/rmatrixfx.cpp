@@ -41,24 +41,25 @@ void rMatrixFX::update()
 /*------------------ EFFECTS ------------------*/
 /*=============================================*/
 /**
- * The first effect. Fills up the matrix.
+ * The first effect. 
+ * Fills up the matrix pixel by pixel.
 */
 void rMatrixFX::effect1()
 {
     Serial.println("1");
 
-    if (millis() - fx1Timer > FX1_DEBOUNCE)
+    if (millis() - ledTimer > FX1_DEBOUNCE)
     {
-        leds[fx1Index] = ColorFromPalette(*palette, fx1Index);
+        leds[ledIndex] = ColorFromPalette(*palette, ledIndex);
         FastLED.show();
         
-        ++fx1Index;
-        fx1Timer = millis();
+        ++ledIndex;
+        ledTimer = millis();
     }
 
-    if (fx1Index == NUM_LEDS)
+    if (ledIndex == NUM_LEDS)
     {
-        fx1Index = 0;
+        ledIndex = 0;
         FastLED.clear();
         FastLED.show();
     }
@@ -66,20 +67,63 @@ void rMatrixFX::effect1()
 
 
 /**
- * The second effect.
+ * The second effect. 
+ * Blink effect.
 */
 void rMatrixFX::effect2()
 {
     Serial.println("2");
+
+    if (millis() - ledTimer > FX2_DEBOUNCE)
+    {
+        ledBoolean = !ledBoolean;
+
+        if (ledBoolean)
+        {
+            for (int i = 0; i < NUM_LEDS; ++i)
+            {
+                leds[i] = ColorFromPalette(*palette, i);
+            }
+        }
+        else 
+        {
+            FastLED.clear();
+        }
+
+        FastLED.show();
+        ledTimer = millis();
+    }
 }
 
 
 /**
  * The third effect.
+ * Theater chase
 */
 void rMatrixFX::effect3()
 {
     Serial.println("3");
+
+    if (millis() - ledTimer > FX3_DEBOUNCE)
+    {
+        ledBoolean = !ledBoolean;
+
+        FastLED.clear();   
+        for (int i = 0; i < NUM_LEDS; ++i)
+        {
+            if (i % 2 == 0 && ledBoolean)
+            {
+                leds[i] = ColorFromPalette(*palette, i);
+            }
+            else if (i % 2 != 0 && !ledBoolean)
+            {
+                leds[i] = ColorFromPalette(*palette, i);
+            }
+        }
+
+        FastLED.show();
+        ledTimer = millis();
+    }
 }
 
 

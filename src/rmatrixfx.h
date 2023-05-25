@@ -20,6 +20,10 @@ class rMatrixFX
 
         bool changeHappened = false;
 
+        unsigned long ledTimer = millis();
+        int ledIndex = 0;
+        bool ledBoolean = false;
+
 
         // Palette values
         TProgmemRGBPalette16 palettes[NUM_PALETTES] = {*CloudColors_p,
@@ -33,11 +37,7 @@ class rMatrixFX
         typedef void (rMatrixFX::*FXFunction)();
         FXFunction effectFunctions[NUM_EFFECTS] = {&rMatrixFX::effect1, 
                 &rMatrixFX::effect2, &rMatrixFX::effect3, &rMatrixFX::effect4};
-
-        // Effect 1 variables.
-        int fx1Index = 0;
-        int fx1Timer = millis();
-
+ 
 
     public:
         rMatrixFX();
@@ -45,6 +45,9 @@ class rMatrixFX
         void setEffect(int fx)
         {
             effectIndex = fx;
+            ledTimer = millis();
+            ledIndex = 0;
+            ledBoolean = false;
         }
 
         void setPalette(int p)
