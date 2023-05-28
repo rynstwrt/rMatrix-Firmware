@@ -21,7 +21,7 @@ class rMatrix
         String instructions[NUM_INSTRUCTIONS][2] = {
                     {"SHORT CLCK", "FOR NEXT"}, 
                     {"LONG CLCK", "TO CONFIRM"}};
-        String menuItems[NUM_MENU_ITEMS] = {"EFFECT", "PALETTE", "BRIGHTNESS", "SPEED"};
+        String menuItems[NUM_MENU_ITEMS] = {"EFFECT", "PALETTE", "STRENGTH", "SPEED"};
 
         int currentMenuIndex = 0;
         bool menuItemSelected = false;

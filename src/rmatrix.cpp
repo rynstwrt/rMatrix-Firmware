@@ -44,6 +44,7 @@
 
 
 #include <rmatrix.h>
+#include <string>
 
 
 /**
@@ -133,20 +134,17 @@ void rMatrix::drawMenu()
     display.setFont(MENU_FONT);
     display.setTextSize(MENU_FONT_SIZE);
 
+    const String menuText = String(currentMenuIndex + 1) + "." + menuItems[currentMenuIndex];
+
     int16_t x, y;
     uint16_t w, h;
-    display.getTextBounds(menuItems[0].c_str(), 0, 0, &x, &y, &w, &h);
+    display.getTextBounds(menuText.c_str(), 0, 0, &x, &y, &w, &h);
+    
+    int* coords = getCenterTextCoords(menuText, false);
+    display.setCursor(coords[0], coords[1]);
+    delete[] coords;
 
-    int yPos = MENU_SCREEN_PADDING;
-    for (int i = 0; i < NUM_MENU_ITEMS; ++i)
-    {
-        display.setCursor(MENU_SCREEN_PADDING, yPos);
-        
-        String text = (i == currentMenuIndex) ? ">" + menuItems[i] : menuItems[i];
-        display.print(text);
-        yPos += h + MENU_SPACING;
-    }
-
+    display.println(menuText);
     display.display();
 }
 
@@ -159,7 +157,8 @@ void rMatrix::drawMenu()
 */
 void rMatrix::displayValuePage(int value, int maxValue)
 {
-    --maxValue;
+    // --maxValue;
+    ++value;
 
     display.clearDisplay();
     display.setTextSize(VALUE_FONT_SIZE);
