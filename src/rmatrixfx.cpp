@@ -46,26 +46,15 @@ void rMatrixFX::update()
 /*=============================================*/
 /**
  * The first effect. 
- * Fills up the matrix pixel by pixel.
+ * Solid.
 */
 void rMatrixFX::effect1()
 {
-    if (millis() - ledTimer > FX1_DEBOUNCE)
+    for (int i = 0; i < NUM_LEDS; ++i)
     {
-        float colorIndex = 255 * ledIndex / NUM_LEDS; 
-        leds[ledIndex] = ColorFromPalette(*palettes[paletteIndex], colorIndex);
-        FastLED.show();
-        
-        ++ledIndex;
-        if (ledIndex == NUM_LEDS)
-        {
-            ledIndex = 0;
-            FastLED.clear();
-            FastLED.show();
-        }
-
-        ledTimer = millis();
+        leds[i] = ColorFromPalette(*palettes[paletteIndex], colorStep * i);
     }
+    FastLED.show();
 }
 
 
@@ -83,7 +72,7 @@ void rMatrixFX::effect2()
         {
             for (int i = 0; i < NUM_LEDS; ++i)
             {
-                leds[i] = ColorFromPalette(*palettes[paletteIndex], i);
+                leds[i] = ColorFromPalette(*palettes[paletteIndex], colorStep * i);
             }
         }
         else 
@@ -112,11 +101,11 @@ void rMatrixFX::effect3()
         {
             if (i % 2 == 0 && ledBoolean)
             {
-                leds[i] = ColorFromPalette(*palettes[paletteIndex], i);
+                leds[i] = ColorFromPalette(*palettes[paletteIndex], colorStep * i);
             }
             else if (i % 2 != 0 && !ledBoolean)
             {
-                leds[i] = ColorFromPalette(*palettes[paletteIndex], i);
+                leds[i] = ColorFromPalette(*palettes[paletteIndex], colorStep * i);
             }
         }
 
@@ -128,15 +117,28 @@ void rMatrixFX::effect3()
 
 /**
  * The fourth effect.
- * Rainbow.
+ * Fill up with color then fill up with black.
 */
 void rMatrixFX::effect4()
 {
     if (millis() - ledTimer > FX4_DEBOUNCE)
     {
-        for (int i = 0; i < NUM_LEDS; ++i)
+        if (!ledBoolean)
         {
-            leds[i] = ColorFromPalette(*palettes[paletteIndex], i + ledIndex);
+            leds[ledIndex] = ColorFromPalette(*palettes[paletteIndex], colorStep * ledIndex);
+        }
+        else 
+        {
+            leds[ledIndex] = CRGB::Black;
+        }
+
+        FastLED.show();
+        
+        ++ledIndex;
+        if (ledIndex == NUM_LEDS)
+        {
+            ledIndex = 0;
+            ledBoolean = !ledBoolean;
         }
 
         ledTimer = millis();

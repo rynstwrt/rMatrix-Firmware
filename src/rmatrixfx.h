@@ -19,15 +19,18 @@ class rMatrixFX
 
         bool changeHappened = false;
 
+        int colorStep = floor(255 / NUM_LEDS);
+
         unsigned long ledTimer = millis();
         int ledIndex = 0;
         bool ledBoolean = false;
 
 
         // Palette values
-        const TProgmemRGBPalette16* palettes[NUM_PALETTES] = {&CloudColors_p,
-                &LavaColors_p, &OceanColors_p, &ForestColors_p, &RainbowColors_p,
-                &RainbowStripeColors_p, &PartyColors_p, &HeatColors_p};
+        const TProgmemRGBPalette16* palettes[NUM_PALETTES] = {
+                &RainbowColors_p, &CloudColors_p, &LavaColors_p, 
+                &OceanColors_p, &ForestColors_p, &RainbowStripeColors_p, 
+                &PartyColors_p, &HeatColors_p};
 
 
         // Pointers to all the effect functions.
