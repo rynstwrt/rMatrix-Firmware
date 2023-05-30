@@ -27,18 +27,11 @@ rMatrixFX::rMatrixFX()
 */
 void rMatrixFX::update()
 {
-    if (changeHappened)
-    {
-        // TODO: set brightness, speed, intensity, effect, palette, etc
-        changeHappened = false;
-    }
-
     FastLED.setBrightness(brightness);
 
     FXFunction func = effectFunctions[effectIndex];
     (this->*func)();
 }
-
 
 
 /*=============================================*/

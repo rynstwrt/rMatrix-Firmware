@@ -15,7 +15,6 @@ class rMatrixFX
         int effectIndex = DEFAULT_EFFECT;
         int paletteIndex = DEFAULT_PALETTE;
         int brightness = DEFAULT_BRIGHTNESS * VALUE_STEP;
-        int speed = DEFAULT_SPEED * VALUE_STEP;
 
         bool changeHappened = false;
 
@@ -68,11 +67,6 @@ class rMatrixFX
         {
             brightness = bri * VALUE_STEP;
             FastLED.setBrightness(brightness);
-        }
-
-        void setSpeed(int s)
-        {
-            speed = s * VALUE_STEP;
         }
 
         void update();
