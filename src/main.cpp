@@ -150,18 +150,20 @@ void drawMenu()
     display.clearDisplay();
     display.setFont(MENU_FONT);
     display.setTextSize(MENU_FONT_SIZE);
+    display.setCursor(MENU_SCREEN_PADDING, MENU_SCREEN_PADDING);
 
-    const String menuText = String(currentMenuIndex + 1) + "." + menuItems[currentMenuIndex];
+    for (int i = 0; i < NUM_MENU_ITEMS; ++i)
+    {
+        const String text = (i == currentMenuIndex) ? ">" + menuItems[i] + "<" : menuItems[i];
+        
+        int* coords = getCenterTextCoords(text, false);
+        display.setCursor(coords[0], display.getCursorY());
+        delete[] coords;
 
-    int16_t x, y;
-    uint16_t w, h;
-    display.getTextBounds(menuText.c_str(), 0, 0, &x, &y, &w, &h);
-    
-    int* coords = getCenterTextCoords(menuText, false);
-    display.setCursor(coords[0], coords[1]);
-    delete[] coords;
+        display.println(text);
+        display.setCursor(display.getCursorX(), display.getCursorY() + MENU_SPACING);
+    }
 
-    display.println(menuText);
     display.display();
 }
 
