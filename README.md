@@ -7,5 +7,5 @@ The firmware for the rMatrix project!
 Released under the Creative Commons Attribution-NonCommercial-ShareAlike (CC-BY-NC-SA) license.
 
 - This firmware can be modified and distributed.
-- This firmware and your modifications can NOT be used for commerical purposes.
+- This firmware and your modifications can NOT be used for commercial purposes.
 - Any modifications MUST be released under the same license.
