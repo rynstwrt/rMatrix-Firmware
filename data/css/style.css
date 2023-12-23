@@ -1,0 +1,46 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: #131313;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main {
+  width: 100%;
+  max-width: 700px;
+  height: 100%;
+  max-height: 500px;
+}
+main .button-row {
+  display: flex;
+  justify-content: space-around;
+}
+main .button-row button {
+  width: 130px;
+  height: 50px;
+  background-color: #202020;
+  color: white;
+  border-radius: 5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid gray;
+}
+main .button-row button:hover {
+  cursor: pointer;
+}
+main .button-row button.active {
+  border: 1px solid darkorange;
+}
+
+/*# sourceMappingURL=style.css.map */

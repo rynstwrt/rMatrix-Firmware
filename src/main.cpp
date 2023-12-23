@@ -58,14 +58,32 @@ void setup()
     {
         request->send(LittleFS, "/style.css", "text/css");        
     });
+
+    server.on("/ui-handler.js", HTTP_GET, [](AsyncWebServerRequest* request)
+    {
+        request->send(LittleFS, "/ui-handler", "text/javascript");
+    });
     
     server.onNotFound([](AsyncWebServerRequest* request)
     {
         request->send(LittleFS, "/index.html", "text/html");
     });
 
+    server.on("/effect", HTTP_POST, [](AsyncWebServerRequest* request)
+    {
+        if (request->hasParam("id"))
+        {
+            Serial.println("has param");
+            Serial.println(request->getParam("id")->value());
+            request->send(200);
+            return;
+        }
+
+        request->send(400);
+    });
+
     server.begin();
 }
 
 
-void loop();
+void loop() { }
