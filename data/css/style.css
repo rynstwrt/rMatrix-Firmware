@@ -18,28 +18,26 @@ body {
 
 main {
   width: 100%;
-  max-width: 700px;
-  height: 100%;
-  max-height: 500px;
-}
-main .button-row {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  flex-wrap: wrap;
 }
-main .button-row button {
-  width: 130px;
+main button {
+  width: 100px;
   height: 50px;
+  padding: 10px;
   background-color: #202020;
   color: white;
   border-radius: 5px;
   letter-spacing: 1px;
   text-transform: uppercase;
   border: 1px solid gray;
+  margin: 10px;
 }
-main .button-row button:hover {
+main button:hover {
   cursor: pointer;
 }
-main .button-row button.active {
+main button.active {
   border: 1px solid darkorange;
 }
 

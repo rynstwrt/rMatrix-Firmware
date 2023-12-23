@@ -61,7 +61,7 @@ void setup()
 
     server.on("/ui-handler.js", HTTP_GET, [](AsyncWebServerRequest* request)
     {
-        request->send(LittleFS, "/ui-handler", "text/javascript");
+        request->send(LittleFS, "/ui-handler.js", "text/javascript");
     });
     
     server.onNotFound([](AsyncWebServerRequest* request)
